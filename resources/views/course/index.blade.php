@@ -1,4 +1,13 @@
 <h1>List of course</h1>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div>
     <a href="{{ route('courses.create') }}">
         <button type="submit">Add Course</button>
@@ -6,6 +15,12 @@
 </div>
 <div>
     <table border="1" width='60%' cellspacing='0'>
+        <caption>
+            <form>
+                <label for="txtSearch">Search:</label>
+                <input type="search" name="q" id="txtSearch" value="{{ $search }}">
+            </form>
+        </caption>
         <tr>
             <th>ID</th>
             <th>Name</th>
@@ -43,3 +58,4 @@
         @endforeach
     </table>
 </div>
+{{ $courses->links() }}

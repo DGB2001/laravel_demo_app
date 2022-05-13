@@ -8,3 +8,8 @@
            value="{{ $course->name }}" required>
     <button type="submit">Update</button>
 </form>
+@if($errors->has('name'))
+    <span class="error">
+            {{ $errors->first('name') }}
+    </span>
+@endif

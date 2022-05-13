@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Course;
 
+use App\Models\Course;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdatePostRequest extends FormRequest
+class DestroyCourseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +15,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,14 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'course' => [
+                Rule::exists(Course::class, 'id'),
+            ],
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge(['course' => $this->route('course')]);
     }
 }
