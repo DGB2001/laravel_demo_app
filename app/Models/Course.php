@@ -23,7 +23,14 @@ class Course extends Model
     protected function createdAt(): Attribute
     {
         return Attribute::make(
-            get: fn ($value, $attributes) => date('d/m/Y H:i:s', strtotime($attributes['created_at'])).' ('.Carbon::parse($attributes['created_at'])->diffForHumans().')',
+            get: fn($value, $attributes) => date('d/m/Y H:i:s', strtotime($attributes['created_at'])) . ' (' . Carbon::parse($attributes['created_at'])->diffForHumans() . ')',
+        );
+    }
+
+    protected function updatedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value, $attributes) => date('d/m/Y H:i:s', strtotime($attributes['updated_at'])) . ' (' . Carbon::parse($attributes['updated_at'])->diffForHumans() . ')',
         );
     }
 }

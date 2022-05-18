@@ -28,9 +28,15 @@ Route::resource('/post', PostController::class);
 
 Route::resource('/courses', CourseController::class)->except(['show']);
 
+Route::get('courses/api-index', [CourseController::class, 'api'])->name('courses.api-index');
+
 //Route::group(['prefix' => 'courses', 'as' => 'courses.'], function () {
 //    Route::get('/create', [CourseController::class, 'create'])->name('create');
 //    Route::post('/store', [CourseController::class, 'store'])->name('store');
 //    Route::delete('/destroy/{course}', [CourseController::class, 'destroy'])->name('destroy');
 //    Route::get('/edit/{course}', [CourseController::class, 'edit'])->name('edit');
 //});
+
+Route::get('/test', function () {
+    return view('layouts.master');
+});

@@ -7,34 +7,57 @@ use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Yajra\Datatables\Datatables;
 
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-//     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $page_limit = 5;
-        $search = $request->get('q');
-        $courses = Course::query()->where('name', 'like', '%' . $search . '%')->paginate($page_limit);
-        $courses->appends(['q' => $search]);
+//        $page_limit = 5;
+//        $search = $request->get('q');
+//        $courses = Course::query()->where('name', 'like', '%' . $search . '%')->paginate($page_limit);
+//        $courses->appends(['q' => $search]);
 //        $course_limit = 10;
 //        $courses = Course::paginate($course_limit);
 //        $courses = Course::query()->get();
 //        $courses = Course::get();
-        return view('course.index', [
-            'courses' => $courses,
-            'search' => $search
-        ]);
+//        return view('course.index', [
+//            'courses' => $courses,
+//            'search' => $search
+//        ]);
+        return view('course.index');
+    }
+
+    public function api()
+    {
+//        cach 1
+//        return Datatables::of(Course::query())
+//            ->addColumn('edit', function ($object) {
+//                $link = route('courses.edit', $object);
+//                return "<a href='$link'>
+//                            <button class='btn waves-effect waves-light btn-info text-white'>Edit</button>
+//                        </a>";
+//            })->rawColumns(['edit'])->make(true);
+//        cach 2
+        return Datatables::of(Course::query())
+            ->addColumn('edit', function ($object) {
+                return route('courses.edit', $object);
+            })
+            ->addColumn('delete', function ($object) {
+                return route('courses.destroy', $object);
+            })
+            ->make(true);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-//     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -45,7 +68,7 @@ class CourseController extends Controller
      * Store a newly created resource in storage.
      *
      * @param \App\Http\Requests\Course\StoreCourseRequest $request
-* //     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response
      */
     public function store(StoreCourseRequest $request)
     {
@@ -64,7 +87,7 @@ class CourseController extends Controller
      * Display the specified resource.
      *
      * @param \App\Models\Course $course
-//     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response
      */
     public function show(Course $course)
     {
@@ -75,7 +98,7 @@ class CourseController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param \App\Models\Course $course
-//     * @return \Illuminate\Http\Response
+     * //     * @return \Illuminate\Http\Response
      */
     public function edit(Course $course)
     {
@@ -89,7 +112,7 @@ class CourseController extends Controller
      *
      * @param \App\Http\Requests\Course\UpdateCourseRequest $request
      * @param \App\Models\Course $course
-* //     * @return \Illuminate\Http\Response
+     * //     * @return \Illuminate\Http\Response
      */
     public function update(UpdateCourseRequest $request, Course $course)
     {
@@ -110,14 +133,20 @@ class CourseController extends Controller
      * Remove the specified resource from storage.
      *
      * @param \App\Models\Course $course
-//     * @return \Illuminate\Http\Response
+     * //     * @return \Illuminate\Http\Response
      */
-    public function destroy( DestroyCourseRequest $request, $course)
+    public function destroy(DestroyCourseRequest $request, $course)
     {
         Course::destroy($course);
 //        Course::destroy($course->id);
 //        Course::where('id', $course)->delete();
 //        $course->delete();
-        return redirect()->route('courses.index');
+//        return redirect()->route('courses.index');
+
+        $arr = [];
+        $arr['status'] = true;
+        $arr['message'] = '';
+
+        return response($arr, 200);
     }
 }
