@@ -6,11 +6,27 @@ use App\Http\Requests\Course\DestroyCourseRequest;
 use App\Http\Requests\Course\StoreCourseRequest;
 use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Models\Course;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Yajra\Datatables\Datatables;
 
 class CourseController extends Controller
 {
+    private Builder $model;
+
+    public function __construct()
+    {
+        $this->model = (new Course())->query();
+        $router_name = Route::currentRouteName();
+        $arr = explode('.', $router_name);
+        $arr = array_map('ucfirst', $arr);
+        $breadcrumb = implode(' / ', $arr);
+        View::share('breadcrumb', $breadcrumb);
+        View::share('title', 'Course');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,6 +51,19 @@ class CourseController extends Controller
 
     public function api()
     {
+//        Khong dung thu vien
+//        $data = $this->model->paginate();
+//        $arr = [];
+//        $arr['draw'] = $data->currentPage();
+//        $arr['data'] = $data->items();
+//        foreach ($data->items() as $item) {
+//            $item->edit = route('courses.edit', $item);
+//            $item->delete = route('courses.destroy', $item);
+//        }
+//        $arr['recordsTotal'] = $data->total();
+//        $arr['recordsFiltered'] = $data->total();
+//        return $arr;
+//       *** Dung thu vien Datatables ***
 //        cach 1
 //        return Datatables::of(Course::query())
 //            ->addColumn('edit', function ($object) {
@@ -44,7 +73,7 @@ class CourseController extends Controller
 //                        </a>";
 //            })->rawColumns(['edit'])->make(true);
 //        cach 2
-        return Datatables::of(Course::query())
+        return Datatables::of($this->model)
             ->addColumn('edit', function ($object) {
                 return route('courses.edit', $object);
             })
@@ -52,6 +81,15 @@ class CourseController extends Controller
                 return route('courses.destroy', $object);
             })
             ->make(true);
+    }
+
+    public function apiName(Request $request)
+    {
+        return $this->model->where('name', 'like', '%' . $request->get('q') . '%')
+            ->get([
+                'id',
+                'name'
+            ]);
     }
 
     /**
@@ -79,7 +117,7 @@ class CourseController extends Controller
 //        $course->fill($request->validated());
 //        $course->save();
 //        Course::query()->create($request->except('_token'));
-        Course::query()->create($request->validated()); // chi lay nhung field da qua validate
+        $this->model->create($request->validated()); // chi lay nhung field da qua validate
         return redirect()->route('courses.index');
     }
 
@@ -114,18 +152,21 @@ class CourseController extends Controller
      * @param \App\Models\Course $course
      * //     * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCourseRequest $request, Course $course)
+    public function update(UpdateCourseRequest $request, $courseId)
     {
 //        cach 1 query builder
-//        Course::where('id', $course->id)->update(
-//            $request->except(['_token', '_method'])
+//        $this->model::where('id', $courseId)->update(
+//            $request->validated()
 //        );
 //        cach 2 OOP
 //        $course->fill($request->validated());
 //        $course->save();
-        $course->update(
-            $request->except(['_token', '_method'])
-        );
+//        $course->update(
+//            $request->except(['_token', '_method'])
+//        );
+        $object = $this->model->find($courseId);
+        $object->fill($request->validated());
+        $object->save();
         return redirect()->route('courses.index');
     }
 
@@ -135,11 +176,10 @@ class CourseController extends Controller
      * @param \App\Models\Course $course
      * //     * @return \Illuminate\Http\Response
      */
-    public function destroy(DestroyCourseRequest $request, $course)
+    public function destroy(DestroyCourseRequest $request, $courseId)
     {
-        Course::destroy($course);
-//        Course::destroy($course->id);
-//        Course::where('id', $course)->delete();
+//        $this->model->find($courseId)->delete();
+        $this->model->where('id', $courseId)->delete();
 //        $course->delete();
 //        return redirect()->route('courses.index');
 

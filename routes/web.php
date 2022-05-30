@@ -29,6 +29,7 @@ Route::resource('/post', PostController::class);
 Route::resource('/courses', CourseController::class)->except(['show']);
 
 Route::get('courses/api-index', [CourseController::class, 'api'])->name('courses.api-index');
+Route::get('courses/api-name', [CourseController::class, 'apiName'])->name('courses.api-name');
 
 //Route::group(['prefix' => 'courses', 'as' => 'courses.'], function () {
 //    Route::get('/create', [CourseController::class, 'create'])->name('create');
